@@ -4,6 +4,7 @@ import '../providers/auth_provider.dart';
 import '../constants/app_constants.dart';
 import '../widgets/custom_navbar.dart';
 import 'login_screen.dart';
+import 'courses_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -39,21 +40,17 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             // Home Page Content
             _buildHomeContent(context, authProvider),
-
+            
             // Courses Page Content
-            _buildEmptyStateWidget(
-              'Courses Coming Soon',
-              'We are working hard to bring you the best IELTS courses.',
-              Icons.book,
-            ),
-
+            const CoursesScreen(),
+            
             // Practice Page Content
             _buildEmptyStateWidget(
               'Practice Coming Soon',
               'Interactive practice sessions will be available soon.',
               Icons.chat,
             ),
-
+            
             // Stats Page Content
             _buildEmptyStateWidget(
               'Stats Coming Soon',
