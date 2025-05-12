@@ -31,6 +31,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.dispose();
   }
 
+  // Helper method for profile image
+  ImageProvider _buildUserProfileImage(String url) {
+    return NetworkImage(url);
+  }
+
   Future<void> _loadUserData() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
@@ -152,7 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: authProvider.userPhotoUrl != null
                                 ? CircleAvatar(
                                     radius: 50,
-                                    backgroundImage: NetworkImage(
+                                    backgroundImage: _buildUserProfileImage(
                                         authProvider.userPhotoUrl!),
                                   )
                                 : CircleAvatar(
