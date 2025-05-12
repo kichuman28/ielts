@@ -39,15 +39,27 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             // Home Page Content
             _buildHomeContent(context, authProvider),
-            
+
             // Courses Page Content
-            Center(child: Text('Courses Coming Soon', style: TextStyle(color: AppConstants.accentColor))),
-            
+            _buildEmptyStateWidget(
+              'Courses Coming Soon',
+              'We are working hard to bring you the best IELTS courses.',
+              Icons.book,
+            ),
+
             // Practice Page Content
-            Center(child: Text('Practice Coming Soon', style: TextStyle(color: AppConstants.accentColor))),
-            
+            _buildEmptyStateWidget(
+              'Practice Coming Soon',
+              'Interactive practice sessions will be available soon.',
+              Icons.chat,
+            ),
+
             // Stats Page Content
-            Center(child: Text('Stats Coming Soon', style: TextStyle(color: AppConstants.accentColor))),
+            _buildEmptyStateWidget(
+              'Stats Coming Soon',
+              'Track your progress with detailed statistics.',
+              Icons.leaderboard,
+            ),
           ],
         ),
       ),
@@ -58,6 +70,42 @@ class _HomeScreenState extends State<HomeScreen> {
             _currentIndex = index;
           });
         },
+      ),
+    );
+  }
+
+  Widget _buildEmptyStateWidget(String title, String subtitle, IconData icon) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(AppConstants.defaultPadding * 2),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 80,
+              color: AppConstants.lightAccentColor,
+            ),
+            const SizedBox(height: 24),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey.shade600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -81,12 +129,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     authProvider.userPhotoUrl != null
                         ? CircleAvatar(
                             radius: 30,
-                            backgroundImage: NetworkImage(authProvider.userPhotoUrl!),
+                            backgroundImage: _buildUserProfileImage(
+                                authProvider.userPhotoUrl!),
                           )
                         : CircleAvatar(
                             radius: 30,
                             backgroundColor: AppConstants.lightAccentColor,
-                            child: const Icon(Icons.person, size: 35, color: Colors.white),
+                            child: const Icon(Icons.person,
+                                size: 35, color: Colors.white),
                           ),
                     const SizedBox(width: 16),
                     // User info
@@ -160,6 +210,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  ImageProvider _buildUserProfileImage(String url) {
+    return NetworkImage(url);
   }
 }
 
