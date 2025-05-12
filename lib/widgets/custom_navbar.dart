@@ -14,10 +14,15 @@ class CustomNavBar extends StatelessWidget {
     required this.onTap,
   }) : super(key: key);
 
+  // Helper method for profile image
+  ImageProvider _buildUserProfileImage(String url) {
+    return NetworkImage(url);
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -64,8 +69,8 @@ class CustomNavBar extends StatelessWidget {
                     child: authProvider.userPhotoUrl != null
                         ? CircleAvatar(
                             radius: 14,
-                            backgroundImage:
-                                NetworkImage(authProvider.userPhotoUrl!),
+                            backgroundImage: _buildUserProfileImage(
+                                authProvider.userPhotoUrl!),
                           )
                         : CircleAvatar(
                             radius: 14,
