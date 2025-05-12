@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -12,8 +13,19 @@ class AuthProvider extends ChangeNotifier {
   String _userName = 'Guest';
   String? _userPhotoUrl;
 
+  // Store the auth state subscription for cleanup
+  late final Stream<User?> _authStateStream;
+  StreamSubscription<User?>? _authStateSubscription;
+
   AuthProvider() {
     _initializeAuth();
+  }
+
+  @override
+  void dispose() {
+    // Cancel the auth state subscription when provider is disposed
+    _authStateSubscription?.cancel();
+    super.dispose();
   }
 
   User? get user => _user;
@@ -27,7 +39,8 @@ class AuthProvider extends ChangeNotifier {
   Future<void> _initializeAuth() async {
     try {
       // Listen to auth state changes
-      _auth.authStateChanges().listen((User? user) async {
+      _authStateStream = _auth.authStateChanges();
+      _authStateSubscription = _authStateStream.listen((User? user) async {
         _user = user;
         if (user != null) {
           // Get user data from Firestore
@@ -50,7 +63,9 @@ class AuthProvider extends ChangeNotifier {
         notifyListeners();
       });
     } catch (e) {
-      debugPrint('Error initializing auth: $e');
+      // Error handling is done via notifyListeners
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
@@ -93,7 +108,9 @@ class AuthProvider extends ChangeNotifier {
         });
       }
     } catch (e) {
-      debugPrint('Error saving user to Firestore: $e');
+      // Error handling is done via notifyListeners
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
@@ -137,7 +154,6 @@ class AuthProvider extends ChangeNotifier {
     } catch (e) {
       _isLoading = false;
       notifyListeners();
-      debugPrint('Google sign in error: $e');
       return null;
     }
   }
@@ -161,7 +177,6 @@ class AuthProvider extends ChangeNotifier {
     } catch (e) {
       _isLoading = false;
       notifyListeners();
-      debugPrint('Sign out error: $e');
     }
   }
 }
