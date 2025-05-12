@@ -2,10 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../constants/app_constants.dart';
+import '../widgets/custom_navbar.dart';
 import 'login_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -23,133 +31,135 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppConstants.appName),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.exit_to_app),
-            onPressed: () => _signOut(context),
-          ),
-        ],
+        automaticallyImplyLeading: false,
       ),
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(AppConstants.defaultPadding),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // User profile section
-              Card(
-                elevation: 2,
-                child: Padding(
-                  padding: EdgeInsets.all(AppConstants.defaultPadding),
-                  child: Row(
-                    children: [
-                      // User profile image
-                      authProvider.userPhotoUrl != null
-                          ? CircleAvatar(
-                              radius: 30,
-                              backgroundImage:
-                                  NetworkImage(authProvider.userPhotoUrl!),
-                            )
-                          : CircleAvatar(
-                              radius: 30,
-                              backgroundColor: AppConstants.lightAccentColor,
-                              child: const Icon(Icons.person,
-                                  size: 35, color: Colors.white),
-                            ),
-                      const SizedBox(width: 16),
-                      // User info
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Welcome, ${authProvider.userName}',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            if (authProvider.userEmail.isNotEmpty)
-                              Text(
-                                authProvider.userEmail,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey.shade600,
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              // Main content - replace with your app's actual content
-              const Text(
-                'IELTS Practice Modules',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  children: const [
-                    _ModuleCard(
-                      title: 'Listening',
-                      icon: Icons.headset,
-                      color: AppConstants.primaryColor,
-                    ),
-                    _ModuleCard(
-                      title: 'Reading',
-                      icon: Icons.menu_book,
-                      color: AppConstants.secondaryColor,
-                    ),
-                    _ModuleCard(
-                      title: 'Writing',
-                      icon: Icons.edit,
-                      color: AppConstants.accentColor,
-                    ),
-                    _ModuleCard(
-                      title: 'Speaking',
-                      icon: Icons.mic,
-                      color: AppConstants.lightAccentColor,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+        child: IndexedStack(
+          index: _currentIndex,
+          children: [
+            // Home Page Content
+            _buildHomeContent(context, authProvider),
+            
+            // Courses Page Content
+            Center(child: Text('Courses Coming Soon', style: TextStyle(color: AppConstants.accentColor))),
+            
+            // Practice Page Content
+            Center(child: Text('Practice Coming Soon', style: TextStyle(color: AppConstants.accentColor))),
+            
+            // Stats Page Content
+            Center(child: Text('Stats Coming Soon', style: TextStyle(color: AppConstants.accentColor))),
+          ],
         ),
+      ),
+      bottomNavigationBar: CustomNavBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
       ),
     );
   }
 
-  Future<void> _signOut(BuildContext context) async {
-    try {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      await authProvider.signOut();
-
-      if (context.mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-        );
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Sign out failed: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
+  Widget _buildHomeContent(BuildContext context, AuthProvider authProvider) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.all(AppConstants.defaultPadding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // User profile section
+            Card(
+              elevation: 2,
+              child: Padding(
+                padding: EdgeInsets.all(AppConstants.defaultPadding),
+                child: Row(
+                  children: [
+                    // User profile image
+                    authProvider.userPhotoUrl != null
+                        ? CircleAvatar(
+                            radius: 30,
+                            backgroundImage: NetworkImage(authProvider.userPhotoUrl!),
+                          )
+                        : CircleAvatar(
+                            radius: 30,
+                            backgroundColor: AppConstants.lightAccentColor,
+                            child: const Icon(Icons.person, size: 35, color: Colors.white),
+                          ),
+                    const SizedBox(width: 16),
+                    // User info
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Welcome, ${authProvider.userName}',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          if (authProvider.userEmail.isNotEmpty)
+                            Text(
+                              authProvider.userEmail,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            // Main content title
+            const Text(
+              'IELTS Practice Modules',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Module grid
+            GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              children: const [
+                _ModuleCard(
+                  title: 'Listening',
+                  icon: Icons.headset,
+                  color: AppConstants.primaryColor,
+                ),
+                _ModuleCard(
+                  title: 'Reading',
+                  icon: Icons.menu_book,
+                  color: AppConstants.secondaryColor,
+                ),
+                _ModuleCard(
+                  title: 'Writing',
+                  icon: Icons.edit,
+                  color: AppConstants.accentColor,
+                ),
+                _ModuleCard(
+                  title: 'Speaking',
+                  icon: Icons.mic,
+                  color: AppConstants.lightAccentColor,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

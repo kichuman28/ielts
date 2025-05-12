@@ -68,6 +68,21 @@ class AuthProvider extends ChangeNotifier {
           'createdAt': FieldValue.serverTimestamp(),
           'lastLoginAt': FieldValue.serverTimestamp(),
           'provider': 'google',
+          // Additional fields for IELTS app
+          'bio': '',
+          'targetScore': 0.0,
+          'listeningScore': 0.0,
+          'readingScore': 0.0,
+          'writingScore': 0.0,
+          'speakingScore': 0.0,
+          'overallScore': 0.0,
+          'lastReadingScore': 0.0,
+          'lastReadingDate': null,
+          'lastListeningScore': 0.0,
+          'lastListeningDate': null,
+          'completedModules': [],
+          'savedNotes': [],
+          'practices': [],
         });
       } else {
         await userRef.update({
